@@ -1,4 +1,4 @@
-# Fly Deploy Setup
+# Deploying your App to the cloud (fly.io)
 
 We can deploy apps to fly.io and take advantage of their free tier. By default the Free Tier allows a user to run 3 apps (using 256mb micro virtual machines).
 
@@ -10,12 +10,18 @@ Care must be taken to ensure that:
 
 On your dashboard, always ensure that there are no more than 3 machines listed and all are 256mb. This way your hosting fees will always be $0.
 
-## Initial Setup
+## Step 0: Initial Account Setup
 
-1. [Create an account](https://fly.io/app/sign-up) on fly.io
+1. [Create an account on fly.io](https://fly.io/app/sign-up) on fly.io
 2. Login and add your Credit Card to activate your account. There is $0 charge unless you break the rules above.
 3. Install the Command Line Tools by [following the instructions](https://fly.io/docs/hands-on/install-flyctl/) listed on the website.
 4. Authenticate on your laptop, and you're good to go: `fly auth login` and `fly auth whoami` to verify.
+
+For apps with a database, create your neon.tech account:
+1. [Create an account on neon.tech](https://console.neon.tech/signup)
+2. Verify your email, etc. 
+3. Login and create a project, you can just call it `eda-apps`. That should be all you need.
+4. You can create a database now or later. All databases will be created under the default project and can be deleted at any time.
 
 ## Step 1: Make Your App Deploy Ready
 
@@ -201,9 +207,10 @@ CMD [ "npm", "run", "start" ]
 
 ## Step 3: Deploy Your App
 
-The first time you deploy your app, fly will configure a fixed number of machines. These can be manually changed later, but it's nice 
-to get it right the first time. As mentioned before, fly by default wills pin up TWO machines per app which is convenient for redundancy because
-if one machines goes down, the other will pick up the slack. However, this will take up 2 of your 3 free machines.
+The first time you deploy your app, fly will configure a fixed number of machines that can be manually changed later, 
+but it's nice to get it right the first time. As mentioned before, fly by default wills pin up TWO machines per app which is 
+convenient for redundancy because if one machines goes down, the other will pick up the slack. However, this will take up 
+2 of your 3 free machines and is not necessary for small projects.
 
 To deploy for the first time, and disable high availability, run the following command. For future deploys, you can run the 
 same command or just `fly deploy`. 
@@ -214,7 +221,7 @@ fly deploy --ha=false
 
 You can use `fly logs` to see your server console output and in general monitor the server activity.
 
-After a successful deploy, open your URL and see what it looks like! Also view your dashboard and ensure that you only have 1 machine
+After a successful deploy, open your URL and see what it looks like! Also check out your dashboard and ensure that you only have 1 machine
 launched for your app. **Please note that fly does create and tear down a temporary 'builder' machine that assists in the deploy process**
 You may see this app for a period of time BUT: a) it is a special machine type that is free and b) it destroys itself after a few minutes
 
@@ -225,16 +232,32 @@ There are several issues that could go wrong:
 
 ## Step 4: Cloud Database Setup (if applicable)
 
-To get a database set up in the cloud, there are a few steps. First ensure that you have an account at Neon, which is where we will host our small databases for free.
-  1. Login and create a new database, ensuring `pooled` is enabled for the connections.
-  2. Create your tables and seed any necessary data. You can use the build-in web interface on neon.tech or connect via postico by creating a new server connection and pasting the hostname, username, password, port, and database name.
-  3. Copy the connection string into a new environment variable secret called `DATABASE_URL` on your fly account so that your app can find it:
+To get a database set up in the cloud, there are a few steps. Make sure you followed the initial steps to create an account on neon.tech
+  1. On the neon.tech website, create a new database. Check the box for 'pooled' connections. This text in the box will be needed later (this is your connection string that will go in process.env.DATABASE_URL). You can retrieve it later too.
+     ![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/2aae1b25-1b77-40f1-9485-e5eb97a6a93f)
+
+  3. On the neon.tech dashboard, click 'SQL Editor'. Ensure your database is selected, and run your `CREATE TABLE` statements along with any `INSERT` statements you need for initial seeded data. You can highlight individual queries to run. You can also use postico for this step.
+     ![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/123f581a-d0c1-4bd1-a902-89de85d34b32)
+
+  4. Click the 'Tables' tab and verify that your tables and relevant data are there.
+     ![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/51198d89-255c-4c2d-876a-0791e763a9f0)
+
+  6. On the dashboard, select your database and copy the connection string.
+     ![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/7f44b3b2-059c-4424-9144-42ea718d241d)
+  7. Back in your project, create a new environment variable secret called `DATABASE_URL` and paste in your connection string. Take care
+     to ensure that there are no typos, extra spaces, etc. This is the link between your project and your database. Without this
+     step, `process.env.DATABASE_URL` will not exist.
      ```
      $ fly secrets set DATABASE_URL=postgresql://jDoe354:secretPw123@some.db.com/db_name?sslmode=require
      ```
-     and ensure that the secret is available and there are no typos :)
+
+     Double check to be sure that the secret is available and there are no typos :)
      ```
      $ fly secrets list
      ```
 
 That's it! Monitory your logs with `fly logs` to see if your app is able to read the environment variable and connect properly. To debug, you can drop a `console.log(`Connection String:`, process.env.DATABASE_URL);` to your `pool.js` to verify that the environment variable is set up properly.
+
+To deploy database changes, simply store any `ALTER TABLE` statements as timestamped files in your project (like in a `database_changes` folder) and make sure they all get ran on your production database when you deploy, so that your production database is always up to date. Doing it this way ensures that you do not need to drop your database and re-create it every time you deploy (which destroys all data).
+
+To start over, use the `DROP DATABASE` command: `DROP DATABASE TODO_LIST`
