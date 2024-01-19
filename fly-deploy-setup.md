@@ -64,8 +64,8 @@ if (process.env.DATABASE_URL) {
         database: 'my_database',
     });
 }
-pool.on('connect', () => console.log(`Connected to database'));
-pool.on(error, (err) => console.error(`Error connecting to database: `, err));
+pool.on('connect', () => console.log(`Connected to database`));
+pool.on('error', (err) => console.error(`Error connecting to database:`, err));
 
 module.exports = pool;
 ```
