@@ -1,4 +1,5 @@
 # Deploying your App to the cloud (fly.io)
+## For apps with no database, with or without react
 
 We can deploy apps to fly.io and take advantage of their free tier. By default the Free Tier allows a user to run 3 apps (using 256mb micro virtual machines).
 
