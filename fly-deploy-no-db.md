@@ -24,11 +24,7 @@ On your dashboard, always ensure that there are no more than 3 machines listed a
 3. Install the Command Line Tools by [following the instructions](https://fly.io/docs/hands-on/install-flyctl/) listed on the website.
 4. Authenticate on your laptop, and you're good to go: `fly auth login` and `fly auth whoami` to verify.
 
-For apps with a database, create your neon.tech account:
-1. [Create an account on neon.tech](https://console.neon.tech/signup)
-2. Verify your email, etc. 
-3. Login and create a project, you can just call it `eda-apps`. That should be all you need.
-4. You can create a database now or later. All databases will be created under the default project and can be deleted at any time.
+For projects that are using a database, see [./fly-deploy-postgres.md](./fly-deploy-postgres.md)
 
 ## Step 1: Make Your App Deploy Ready
 
@@ -49,33 +45,7 @@ Ensure that `package.json` is properly configured for `npm start`:
 ...
 ````
 
-For projects that are using a database, ensure that your `pool.js` can account for external database configuration via an environment
-variable called `DATABASE_URL`. You are responsible for making this environment variable using `fly secrets` in step 4.
-
-pool.js
-``` javascript
-const pg = require('pg');
-let pool;
-
-// Example of what DATABASE_URL could look like (you get this from your db provider)
-// DATABASE_URL=postgresql://jDoe354:secretPw123@some.db.com/db_name?sslmode=require
-if (process.env.DATABASE_URL) {
-    pool = new pg.Pool({
-        connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false }
-    });
-} else {
-    pool = new pg.Pool({
-        host: 'localhost',
-        port: 5432,
-        database: 'my_database',
-    });
-}
-pool.on('connect', () => console.log(`Connected to database`));
-pool.on('error', (err) => console.error(`Error connecting to database:`, err));
-
-module.exports = pool;
-```
+For projects that are using a database, see [./fly-deploy-postgres.md](./fly-deploy-postgres.md)
 
 ## Step 2: Cloud Project Setup
 
@@ -206,36 +176,3 @@ You may see this app for a period of time BUT: a) it is a special machine type t
 There are several issues that could go wrong:
   - If your `server.js` is not using `process.env.PORT`, it may try to listen on `5000` which likely won't be correct
   - If your `fly.toml` file is missing the PORT environment variable, your server may not be able to listen on the right port
-  - If your database is not set up properly, or you are missing `process.env.DATABASE_URL`, the app won't be able to run properly.
-
-## Step 4: Cloud Database Setup (if applicable)
-
-To get a database set up in the cloud, there are a few steps. Make sure you followed the initial steps to create an account on neon.tech
-  1. On the neon.tech website, create a new database. Check the box for 'pooled' connections. This text in the box will be needed later (this is your connection string that will go in process.env.DATABASE_URL). You can retrieve it later too.
-     ![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/2aae1b25-1b77-40f1-9485-e5eb97a6a93f)
-
-  3. On the neon.tech dashboard, click 'SQL Editor'. Ensure your database is selected, and run your `CREATE TABLE` statements along with any `INSERT` statements you need for initial seeded data. You can highlight individual queries to run. You can also use postico for this step.
-     ![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/123f581a-d0c1-4bd1-a902-89de85d34b32)
-
-  4. Click the 'Tables' tab and verify that your tables and relevant data are there.
-     ![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/51198d89-255c-4c2d-876a-0791e763a9f0)
-
-  6. On the dashboard, select your database and copy the connection string.
-     ![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/7f44b3b2-059c-4424-9144-42ea718d241d)
-  7. Back in your project, create a new environment variable secret called `DATABASE_URL` and paste in your connection string. Take care
-     to ensure that there are no typos, extra spaces, etc. This is the link between your project and your database. Without this
-     step, `process.env.DATABASE_URL` will not exist.
-     ```
-     $ fly secrets set DATABASE_URL=postgresql://jDoe354:secretPw123@some.db.com/db_name?sslmode=require
-     ```
-
-     Double check to be sure that the secret is available and there are no typos :)
-     ```
-     $ fly secrets list
-     ```
-
-That's it! Monitory your logs with `fly logs` to see if your app is able to read the environment variable and connect properly. To debug, you can drop a `console.log(`Connection String:`, process.env.DATABASE_URL);` to your `pool.js` to verify that the environment variable is set up properly.
-
-To deploy database changes, simply store any `ALTER TABLE` statements as timestamped files in your project (like in a `database_changes` folder) and make sure they all get ran on your production database when you deploy, so that your production database is always up to date. Doing it this way ensures that you do not need to drop your database and re-create it every time you deploy (which destroys all data).
-
-To start over, use the `DROP DATABASE` command: `DROP DATABASE TODO_LIST`
