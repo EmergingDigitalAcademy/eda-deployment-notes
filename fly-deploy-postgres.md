@@ -15,10 +15,13 @@ On your dashboard, always ensure that there are no more than 3 machines listed a
   1. Ensure `server.js`, `package.json`, and `pool.js` are good to go.
   2. Copy `fly.toml` and `Dockerfile` into your project
   3. Change line 5 in `fly.toml`: `app = "yourinitials-projectname"`
-  4. `fly launch --vm-size=shared-cpu-1x` ('Y' to copy config, 'Y' to tweak - set postgres to `none`, 'Y' for .dockerfile)
-  5. `fly deploy --ha=false`
-  6. Create database tables in your project at neon.tech dashboard
-  7. Copy connection string, then `fly secrets set DATABASE_URL=...` in your project
+  4. `fly launch --vm-size=shared-cpu-1x`
+     - 'Y' to copy config
+     - 'Y' to tweak - set postgres to `none` (***IMPORTANT***)
+     - 'Y' for .dockerfile)
+  6. `fly deploy --ha=false`
+  7. Create database tables in your project at neon.tech dashboard
+  8. Copy connection string, then `fly secrets set DATABASE_URL=...` in your project
 
 ## Step 0: Initial Account Setup
 
