@@ -8,6 +8,7 @@ We can deploy apps to fly.io and take advantage of their free tier. By default t
 Care must be taken to ensure that:
   - Apps are deployed to a single machine. By default Fly will spin up TWO machines per app for high availability.
   - Apps are deployed to a micro virtual machine with 256mb of RAM. This ensures that hosting costs will be < $5/mo
+  - Apps are deployed *without* a database machine, since we're using the free tier of neon.tech and do not need fly to provision us a postgres machine (which counts against our free tier)
 
 On your dashboard, always ensure that there are no more than 3 machines listed and all are 256mb. This way your hosting fees will always be $0.
 
