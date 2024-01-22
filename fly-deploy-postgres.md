@@ -21,8 +21,10 @@ On your dashboard, always ensure that there are no more than 3 machines listed a
      - 'Y' to tweak - set postgres to `none` (***IMPORTANT***)
      - 'Y' for .dockerfile)
   6. `fly deploy --ha=false`
-  7. Create database tables in your project at neon.tech dashboard
-  8. Copy connection string, then `fly secrets set DATABASE_URL=...` in your project
+  8. Create database tables in your project at neon.tech dashboard
+  9. Copy connection string, then `fly secrets set DATABASE_URL=...` in your project
+
+To deploy code changes after : `fly deploy`
 
 ## Step 0: Initial Account Setup
 
