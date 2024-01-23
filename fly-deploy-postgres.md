@@ -253,14 +253,15 @@ On the dashboard, select your database and copy the connection string.
 Back in your project, create a new environment variable secret called `DATABASE_URL` and paste in your connection string. Take care
      to ensure that there are no typos, extra spaces, etc. This is the link between your project and your database. Without this
      step, `process.env.DATABASE_URL` will not exist.
-     ```
-     $ fly secrets set DATABASE_URL=postgresql://jDoe354:secretPw123@some.db.com/db_name?sslmode=require
-     ```
+     
+   ```
+   $ fly secrets set DATABASE_URL=postgresql://jDoe354:secretPw123@some.db.com/db_name?sslmode=require
+   ```
 
-     Double check to be sure that the secret is available and there are no typos :)
-     ```
-     $ fly secrets list
-     ```
+   Double check to be sure that the secret is available and there are no typos :)
+   ```
+   $ fly secrets list
+   ```
 
 That's it! Monitory your logs with `fly logs` to see if your app is able to read the environment variable and connect properly. To debug, you can drop a `console.log(`Connection String:`, process.env.DATABASE_URL);` to your `pool.js` to verify that the environment variable is set up properly.
 
