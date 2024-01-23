@@ -58,9 +58,12 @@ Ensure that `package.json` is properly configured for `npm start`:
 ...
 ````
 
+### Action: Update your `pool.js` to account for a cloud database
+
 For projects that are using a database, ensure that your `pool.js` can account for external database configuration via an environment
 variable called `DATABASE_URL`. You are responsible for making this environment variable using `fly secrets` in step 4.
 
+Here's a `pool.js` you can use. It looks for the `process.env.DATABASE_URL` environment variable, and uses it if found. You don't need to edit this file, it's good to go.
 pool.js
 ``` javascript
 const pg = require('pg');
@@ -131,6 +134,11 @@ primary_region = "ord"
 
 ```
 
+### Action: Create your Dockerfile
+
+Create a `Dockerfile` in your root project directory. This file contains the instructions
+that fly will use to run our app (installs NodeJS, installs our node packages, runs the project, etc).
+
 Dockerfile (for base app with or without react)
 ```
 # syntax = docker/dockerfile:1
@@ -178,12 +186,14 @@ CMD [ "npm", "run", "start" ]
 
 ### Action: Create the Cloud App
 
-Now that we have our fly config file and Dockerfile, we can provision the resources on fly's platform.
+Now that we have our `fly.toml` config file and `Dockerfile`, we can provision the resources on fly's platform.
 
-Note that as of right now, there is no way to ask fly to NOT create a cloud database machine for us. Ensure that
-the postgres database is not selected by following the instructions below.
+Note that as of right now, there is no way to ask fly to NOT create a separate dedicated cloud database machine for us. Ensure that fly will skip this step by following the instructions below.
 
-Run this command, and verify that everything looks correct (including the VM size of 256mb AND skip database creation)
+Run this command, and verify that everything looks correct:
+  - `app name` is updated to be specific to your project
+  - `vm size` is 256mb shared-cpu-1x
+  - `database` is set to `none`
 ```
 # Answer 'Y' to copying the configuration into the new app
 # Answer 'Y' to needing to tweaking the settings
