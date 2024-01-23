@@ -255,7 +255,7 @@ Back in your project, create a new environment variable secret called `DATABASE_
      step, `process.env.DATABASE_URL` will not exist.
      
    ```
-   $ fly secrets set DATABASE_URL="postgresql://jDoe354:secretPw123@some.db.com/db_name?sslmode=require"
+   $ fly secrets set DATABASE_URL=postgresql://jDoe354:secretPw123@some.db.com/db_name?sslmode=require
    ```
 
    Double check to be sure that the secret is available and there are no typos :)
