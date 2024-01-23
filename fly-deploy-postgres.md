@@ -13,15 +13,15 @@ Care must be taken to ensure that:
 On your dashboard, always ensure that there are no more than 3 machines listed and all are 256mb. This way your hosting fees will always be $0.
 
 ### Summary of Steps:
-  1. Ensure `server.js`, `package.json`, and `pool.js` are good to go.
-  2. Copy `fly.toml` and `Dockerfile` into your project
-  3. Change line 5 in `fly.toml`: `app = "yourinitials-projectname"`
-  4. `fly launch --vm-size=shared-cpu-1x`
+  1. Ensure [`server.js`](#step-1-make-your-app-deploy-ready), [`package.json`](#step-1-make-your-app-deploy-ready), and [`pool.js`](#action-update-your-pooljs-to-account-for-a-cloud-database) are good to go.
+  2. Copy [`fly.toml`](#action-update-flytoml-with-an-appropriate-app-name) and [`Dockerfile`](#action-create-your-dockerfile) into your project
+  3. Change line 5 in `fly.toml` to a unique app namespace, like your initials and project name `app = "githubhandle-projectname"` or `app = "booherbg-todo-app"`
+  4. [`fly launch --vm-size=shared-cpu-1x`](#action-create-the-cloud-app)
      - 'Y' to copy config
      - 'Y' to tweak - set postgres to `none` (***IMPORTANT***)
      - 'Y' for .dockerfile)
-  6. `fly deploy --ha=false`
-  8. Create database tables in your project at neon.tech dashboard
+  6. [`fly deploy --ha=false`](#step-3-deploy-your-app)
+  8. [Create database tables](#step-3-deploy-your-app) in your project at neon.tech dashboard
   9. Copy connection string, then `fly secrets set DATABASE_URL=...` in your project
 
 To deploy code changes after : `fly deploy`
@@ -246,9 +246,11 @@ To get a database set up in the cloud, there are a few steps. Make sure you foll
   4. Click the 'Tables' tab and verify that your tables and relevant data are there.
      ![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/51198d89-255c-4c2d-876a-0791e763a9f0)
 
-  6. On the dashboard, select your database and copy the connection string.
+### Action: Create your `DATABASE_URL` environment variable 
+On the dashboard, select your database and copy the connection string.
      ![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/7f44b3b2-059c-4424-9144-42ea718d241d)
-  7. Back in your project, create a new environment variable secret called `DATABASE_URL` and paste in your connection string. Take care
+
+Back in your project, create a new environment variable secret called `DATABASE_URL` and paste in your connection string. Take care
      to ensure that there are no typos, extra spaces, etc. This is the link between your project and your database. Without this
      step, `process.env.DATABASE_URL` will not exist.
      ```
