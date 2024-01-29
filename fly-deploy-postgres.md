@@ -25,7 +25,7 @@ On your dashboard, always ensure that there are no more than 3 machines listed a
   8. [Create database tables](#step-4-cloud-database-setup-if-applicable) in your project at neon.tech dashboard
   9. [Copy connection string](#action-create-your-database_url-environment-variable), then `fly secrets set DATABASE_URL=...` in your project
 
-To deploy code changes after : `fly deploy`
+To deploy code changes after : `fly deploy` (no react) or `npm run build && fly deploy` (with react)
 
 ## Step 0: Initial Account Setup
 
@@ -56,7 +56,7 @@ app.use(express.static('build'));
 ```
 
 Ensure that `package.json` is properly configured for `npm start`. The `"deploy"` script
-is optional but allows you to run `npm run deploy` may come in handy later.
+is optional but allows you to run `npm run deploy` may come in handy later as it combines two commands.
 
 ``` json
 ...
@@ -252,6 +252,10 @@ The first time you deploy your app, fly will configure a fixed number of machine
 To deploy for the first time, and disable high availability, run the following command. You should run `npm run build` before every deploy so that you ensure that your react app is up to date.
 
 ```
+#Without React:
+fly deploy --ha=false
+
+#With React:
 npm run build && fly deploy --ha=false
 ```
 
