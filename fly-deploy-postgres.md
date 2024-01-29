@@ -14,7 +14,7 @@ On your dashboard, always ensure that there are no more than 3 machines listed a
 
 ### Summary of Steps:
   1. Ensure [`server.js`](#step-1-make-your-app-deploy-ready), [`package.json`](#step-1-make-your-app-deploy-ready), and [`pool.js`](#action-update-your-pooljs-to-account-for-a-cloud-database) are good to go.
-  2. Copy [`fly.toml`](#action-update-flytoml-with-an-appropriate-app-name) and [`Dockerfile`](#action-create-your-dockerfile) into your project
+  2. Copy [`fly.toml`](#action-update-flytoml-with-an-appropriate-app-name), [`Dockerfile`](#action-create-your-dockerfile), [`.dockerignore`](#action-create-your-.dockerignore-file) into your project
   3. Change line 5 in `fly.toml` to a unique app namespace, like your initials and project name `app = "githubhandle-projectname"` or `app = "booherbg-todo-app"`
   4. [`fly launch --vm-size=shared-cpu-1x`](#action-create-the-cloud-app)
      - 'Y' to copy config
