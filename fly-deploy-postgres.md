@@ -49,11 +49,16 @@ on your machine, or allow for that default to be overriden by providing an alter
 const PORT = process.env.PORT || 5000;
 ```
 
+Double check that express is configured to serve our a `build/` folder:
+```
+app.use(express.static('build'));
+```
+
 Ensure that `package.json` is properly configured for `npm start`:
 ``` json
 ...
   "scripts": {
-    "start": "node server/server.js"
+    "start": "node server/server.js"  (note: make sure vite is not referenced here)
   }
 ...
 ````
@@ -184,6 +189,40 @@ EXPOSE 8080
 CMD [ "npm", "run", "start" ]
 ```
 
+### Action: Create a .dockerignore file
+
+This ensures the `build/` folder is not ignored
+
+.dockerignore
+```
+# flyctl launch added from .gitignore
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+# cypress Snapshots
+cypress/screenshots
+
+# dependencies
+node_modules
+
+# testing
+coverage
+
+# production
+
+# misc
+**/.DS_Store
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+**/.eslintcache
+fly.toml
+```
+
 ### Action: Create the Cloud App
 
 Now that we have our `fly.toml` config file and `Dockerfile`, we can provision the resources on fly's platform.
@@ -212,6 +251,7 @@ The first time you deploy your app, fly will configure a fixed number of machine
 To deploy for the first time, and disable high availability, run the following command:
 
 ```
+npm run build
 fly deploy --ha=false
 ```
 
