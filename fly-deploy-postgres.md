@@ -54,11 +54,14 @@ Double check that express is configured to serve our a `build/` folder:
 app.use(express.static('build'));
 ```
 
-Ensure that `package.json` is properly configured for `npm start`:
+Ensure that `package.json` is properly configured for `npm start`. The `"deploy"` script
+is optional but allows you to run `npm run deploy` may come in handy later.
+
 ``` json
 ...
   "scripts": {
-    "start": "node server/server.js"  (note: make sure vite is not referenced here)
+    "start": "node server/server.js",  (note: make sure vite is not referenced here)
+    "deploy": "npm run build && fly deploy --ha=false"
   }
 ...
 ````
@@ -172,9 +175,6 @@ RUN apt-get update -qq && \
 COPY --link package-lock.json package.json ./
 RUN npm ci
 
-# Run the build stage (mostly for react)
-RUN if [ -f src/index.js ]; then npm run build; fi
-
 # Copy application code
 COPY --link . .
 
@@ -248,11 +248,10 @@ Verify that your `fly.toml` and `Dockerfile` look OK and have not been overwritt
 
 The first time you deploy your app, fly will configure a fixed number of machines that can be manually changed later, but it's nice to get it right the first time. As mentioned before, fly by default wills pin up TWO machines per app which is convenient for redundancy because if one machines goes down, the other will pick up the slack. However, this will take up 2 of your 3 free machines and is not necessary for small projects.
 
-To deploy for the first time, and disable high availability, run the following command:
+To deploy for the first time, and disable high availability, run the following command. You should run `npm run build` before every deploy so that you ensure that your react app is up to date.
 
 ```
-npm run build
-fly deploy --ha=false
+npm run build && fly deploy --ha=false
 ```
 
 If you forget `--ha=false`, you may end up with 2 machines for the app. To fix this just destroy one of them:
