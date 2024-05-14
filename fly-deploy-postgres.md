@@ -16,12 +16,12 @@ On your dashboard, always ensure that there are no more than 3 machines listed a
   1. Ensure [`server.js`](#step-1-make-your-app-deploy-ready), [`package.json`](#step-1-make-your-app-deploy-ready), and [`pool.js`](#action-update-your-pooljs-to-account-for-a-cloud-database) are good to go.
   2. Copy [`fly.toml`](#action-update-flytoml-with-an-appropriate-app-name), [`Dockerfile`](#action-create-your-dockerfile), [`.dockerignore`](#action-create-your-dockerignore-file) into your project
   3. Change line 5 in `fly.toml` to a unique app namespace, like your initials and project name `app = "githubhandle-projectname"` or `app = "booherbg-todo-app"`
-  4. [`fly launch --vm-size=shared-cpu-1x`](#action-create-the-cloud-app)
+  4. [`fly launch --ha=false`](#action-create-the-cloud-app)
      - 'Y' to copy config
      - 'Y' to tweak - set postgres to `none` (***IMPORTANT***)
      - 'Y' for .dockerfile)
-  6. With React: [`npm run build && fly deploy --ha=false`](#step-3-deploy-your-app)
-  7. Without React: [`npm run build && fly deploy --ha=false`](#step-3-deploy-your-app)
+  6. With React: [`npm run build && fly deploy`](#step-3-deploy-your-app)
+  7. Without React: [`npm run build && fly deploy`](#step-3-deploy-your-app)
   8. [Create database tables](#step-4-cloud-database-setup-if-applicable) in your project at neon.tech dashboard
   9. [Copy connection string](#action-create-your-database_url-environment-variable), then `fly secrets set DATABASE_URL=...` in your project
 
@@ -230,6 +230,7 @@ Now that we have our `fly.toml` config file and `Dockerfile`, we can provision t
 
 Note that as of right now, there is no way to ask fly to NOT create a separate dedicated cloud database machine for us. Ensure that fly will skip this step by following the instructions below.
 
+
 Run this command, and verify that everything looks correct:
   - `app name` is updated to be specific to your project
   - `vm size` is 256mb shared-cpu-1x
@@ -239,30 +240,40 @@ Run this command, and verify that everything looks correct:
 # Answer 'Y' to needing to tweaking the settings
 # Set the 'postgres' provisioning to 'none' -- we do not need to provision a database
 # Answer 'Y' to creating a .dockerignore file
-fly launch --vm-size=shared-cpu-1x
+fly launch --ha=false
 ```
+
+Note: Need to update this image to use `--ha=false` in launch step.
 ![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/ac6c9d59-abdf-42ae-8b9b-e087a32a2c6e)
 
 Verify that your `fly.toml` and `Dockerfile` look OK and have not been overwritten with new defaults. Check the reference file above to ensure the ports are still 8080 and your settings look OK.
 
+The first time you launch your app, fly will deploy for you. As mentioned before, fly by default will spin up TWO machines per app which is convenient for redundancy because if one machines goes down, the other will pick up the slack. However, this will take up 2 of your 3 free machines and is not necessary for small projects. Run `fly scale count 1` to scale down to 1 machine if needed.
+
+Run `fly open` to launch your app in the browser.
+
 ## Step 3: Deploy Your App
 
-The first time you deploy your app, fly will configure a fixed number of machines that can be manually changed later, but it's nice to get it right the first time. As mentioned before, fly by default wills pin up TWO machines per app which is convenient for redundancy because if one machines goes down, the other will pick up the slack. However, this will take up 2 of your 3 free machines and is not necessary for small projects.
-
-To deploy for the first time, and disable high availability, run the following command. You should run `npm run build` before every deploy so that you ensure that your react app is up to date.
+You should run `npm run build` before every deploy so that you ensure that your react app is up to date.
 
 ```
 #Without React:
-fly deploy --ha=false
+fly deploy
 
 #With React:
-npm run build && fly deploy --ha=false
+npm run build && fly deploy
 ```
 
-If you forget `--ha=false`, you may end up with 2 machines for the app. To fix this just destroy one of them:
+To make sure you are only running one machine, just run:
 
 ```
-fly machines list -q                 (to verify there are two machines)
+fly machines list                    (to verify how many machines are running)
+fly scale count 1                    (to make sure we are only running 1 machine)
+```
+
+To destroy a machine manually:
+```
+fly machines list -q                 (to verify how many machines are running)
 fly destroy --force the_machine_id   (just pick one of the machine IDs to destroy)
 ```
 ![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/3b733ca9-5229-4ef7-809b-28676128d905)
