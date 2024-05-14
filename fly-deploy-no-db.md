@@ -151,11 +151,13 @@ Run these commands, and verify that everything looks correct (including the VM s
 # Answer 'Y' to creating a .dockerignore file
 fly launch --ha=false
 ```
-![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/ac6c9d59-abdf-42ae-8b9b-e087a32a2c6e)
+![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/94e8f142-26ba-41a3-b68b-2ba96af67525)
 
-## Step 3: Deploy Your App
+That's it! Fly will deploy your app for you the first time. Use `fly open` to launch your browser, and `fly logs` to debug.
 
-To deploy:
+## Step 3: How to deploy your app
+
+Your app is probably deployed already. To deploy again:
 
 ```
 fly deploy
