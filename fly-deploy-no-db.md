@@ -15,8 +15,9 @@ On your dashboard, always ensure that there are no more than 3 machines listed a
   1. Ensure `server.js` and `package.json` are good to go.
   2. Copy `fly.toml` and `Dockerfile` into your project
   3. Change line 5 in `fly.toml`: `app = "yourinitials-projectname"`
-  4. `fly launch --vm-size=shared-cpu-1x` ('Y' to copy config, 'N' to tweak, 'Y' to .dockerignore)
-  5. `fly deploy --ha=false`
+  4. `fly launch --ha=false` ('Y' to copy config, 'N' to tweak, 'Y' to .dockerignore)
+  5. `fly scale count 1` to confirm only 1 machine
+  6. `fly deploy` (for all future deploys)
 
 ## Step 0: Initial Account Setup
 
@@ -135,33 +136,43 @@ EXPOSE 8080
 CMD [ "npm", "run", "start" ]
 ```
 
-### Action: Create the Cloud App
+### Action: Create the Cloud App (deploy)
 
 Now that we have our fly config file and Dockerfile, we can provision the resources on fly's platform.
 
-Run this command, and verify that everything looks correct (including the VM size of 256mb)
+The first time you launch your app, fly will deploy for you. As mentioned before, fly by default wills pin up TWO machines per app which is convenient for redundancy because if one machines goes down, the other will pick up the slack. However, this will take up 2 of your 3 free machines and is not necessary for small projects. Run `fly scale count 1` to scale down to 1 machine if needed.
+
+Verify that your `fly.toml` and `Dockerfile` look OK and have not been overwritten with new defaults. Check the reference file above to ensure the ports are still 8080 and your settings look OK.
+
+Run these commands, and verify that everything looks correct (including the VM size of 256mb)
 ```
 # Answer 'Y' to copying the configuration into the new app
 # Answer 'N' to needing to tweaking the settings
 # Answer 'Y' to creating a .dockerignore file
-fly launch --vm-size=shared-cpu-1x
+fly launch --ha=false
 ```
 ![image](https://github.com/EmergingDigitalAcademy/eda-deployment-notes/assets/159698/ac6c9d59-abdf-42ae-8b9b-e087a32a2c6e)
 
-Verify that your `fly.toml` and `Dockerfile` look OK and have not been overwritten with new defaults. Check the reference file above to ensure the ports are still 8080 and your settings look OK.
-
 ## Step 3: Deploy Your App
 
-The first time you deploy your app, fly will configure a fixed number of machines that can be manually changed later, but it's nice to get it right the first time. As mentioned before, fly by default wills pin up TWO machines per app which is convenient for redundancy because if one machines goes down, the other will pick up the slack. However, this will take up 2 of your 3 free machines and is not necessary for small projects.
-
-To deploy for the first time, and disable high availability, run the following command:
+To deploy:
 
 ```
-fly deploy --ha=false
+fly deploy
 ```
 
-If you forget `--ha=false`, you may end up with 2 machines for the app. To fix this just destroy one of them:
+It's a good idea to make sure you only have 1 machine. You can do this manually (below) or just run `fly scale count 1` to force the app to have only 1 machine.
 
+```
+fly machines list                 (to verify there are two machines)
+```
+
+To scale down to 1 machine:
+```
+fly scale count 1
+```
+
+Alternatively, you can pick the machine to destroy:
 ```
 fly machines list -q                 (to verify there are two machines)
 fly destroy --force the_machine_id   (just pick one of the machine IDs to destroy)
