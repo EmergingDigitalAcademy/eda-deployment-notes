@@ -252,6 +252,10 @@ The first time you launch your app, fly will deploy for you. As mentioned before
 
 Run `fly open` to launch your app in the browser.
 
+** Please Note ** If fly crashes during the launch, or needs an update and decides to uninstall itself, just run `fly deploy` to redeploy. 
+
+To reinstall fly: `curl -L https://fly.io/install.sh | sh`
+
 ## Step 3: Deploy Your App
 
 You should run `npm run build` before every deploy so that you ensure that your react app is up to date.
