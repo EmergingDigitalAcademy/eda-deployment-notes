@@ -313,6 +313,8 @@ Back in your project, create a new environment variable secret called `DATABASE_
    $ fly secrets set DATABASE_URL="postgresql://jDoe354:secretPw123@some.db.com/db_name?sslmode=require"
    ```
 
+**NOTE**: If you are using bash (not zsh), do not use quotes. 
+
    Double check to be sure that the secret is available and there are no typos :)
    ```
    $ fly secrets list
