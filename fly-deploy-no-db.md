@@ -13,7 +13,7 @@ On your dashboard, always ensure that there are no more than 3 machines listed a
 
 ### Summary of Steps:
   1. Ensure [`server.js`](#step-1-make-your-app-deploy-ready) and [`package.json`](#step-1-make-your-app-deploy-ready) are good to go
-  2. Copy [`fly.toml`](#action-update-flytoml-with-an-appropriate-app-name), [`Dockerfile`](#action-create-your-dockerfile), [`.dockerignore`](#action-create-your-dockerignore-file) into your project
+  2. Copy [`fly.toml`](#action-update-flytoml-with-an-appropriate-app-name) and [`Dockerfile`](#action-create-your-dockerfile),  into your project
   3. Change line 5 in `fly.toml`: `app = "yourinitials-projectname"`
   4. `fly launch --ha=false` ('Y' to copy config, 'N' to tweak, 'Y' to .dockerignore)
   5. `fly scale count 1` to confirm only 1 machine
