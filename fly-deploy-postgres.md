@@ -21,7 +21,7 @@ On your dashboard, always ensure that there are no more than 3 machines listed a
      - 'Y' to tweak - set postgres to `none` (***IMPORTANT***)
      - 'Y' for .dockerfile)
   6. With React: [`npm run build && fly deploy`](#step-3-deploy-your-app)
-  7. Without React: [`npm run build && fly deploy`](#step-3-deploy-your-app)
+  7. Without React: [`fly deploy`](#step-3-deploy-your-app)
   8. [Create database tables](#step-4-cloud-database-setup-if-applicable) in your project at neon.tech dashboard
   9. [Copy connection string](#action-create-your-database_url-environment-variable), then `fly secrets set DATABASE_URL=...` in your project
 
